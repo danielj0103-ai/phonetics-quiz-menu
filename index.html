@@ -1495,7 +1495,21 @@ start = async function() {
   document.addEventListener('touchstart', function() { _lastInteraction = Date.now(); }, true);
 
   HTMLMediaElement.prototype.play = function() {
-    if (this.tagName === 'AUDIO' && Date.now() - _lastInteraction > 50) {
+    if (this.tagName === 'AUDIO') {
+      // 換新題目（src 改變）時清除解鎖狀態，讓自動播放恢復被攔截
+      if (this._lastSrc !== this.src) {
+        this._lastSrc = this.src;
+        this._soundUnlocked = false;
+      }
+      // 50ms 內有互動 → 使用者主動播放：放行並開啟 3 秒解鎖窗口
+      // （解鎖窗口內允許遊戲 Gf() 輪詢的 pause+play 重建，避免第一題語音下載慢時要按兩次）
+      if (Date.now() - _lastInteraction < 50 || this._soundUnlocked) {
+        var self = this;
+        this._soundUnlocked = true;
+        clearTimeout(this._unlockTimer);
+        this._unlockTimer = setTimeout(function() { self._soundUnlocked = false; }, 3000);
+        return _origPlay.apply(this, arguments);
+      }
       return Promise.resolve();
     }
     return _origPlay.apply(this, arguments);
