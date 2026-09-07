@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>注音高手 課別選單</title>
+<title>HTML5 FUN::自製遊戲啟動器</title>
 <link href='https://gsyan888.github.io/html5_fun/editor/assets/icon-launcher.png' rel='image_src'/>
 <meta content='HTML5 FUN 烘焙機 自製遊戲啟動器 - 保留 Google 試算表修改遊戲列表功能' property='og:description'/>
 <style>
@@ -1423,16 +1423,6 @@ var gameID = gl_getUrlParam('gameID');
 var gameIdAt = gl_getUrlParam('idat').toUpperCase() || 'A';
 var qs = gl_getUrlParam('qs');
 
-// ============ 預設題庫（單機版選單用） ============
-// 沒有網址參數時，自動載入這個試算表的遊戲列表分頁 → 直接出現課別選單
-var DEFAULT_SHEET_ID = '1eaVAbnTEDxyiimazfgcYk1JTw8B-sG6yx2IRI2zc_5k';
-if(fileId=='') {
-  sheetId = DEFAULT_SHEET_ID;   // 一定要設 sheetId，start() 是用它判斷走「試算表」分支
-  fileId = DEFAULT_SHEET_ID;
-  gid = '0';
-}
-// ============ 預設題庫結束 ============
-
 start = async function() {
   var timeDelay = /^file:/.test(window.location.href)?500:6000;
   var rocketLabel = document.querySelector('#rocket-label');
@@ -1514,7 +1504,7 @@ start = async function() {
   var btn = document.createElement('div');
   btn.id = 'backToMenuBtn';
   btn.textContent = '主選單';
-  btn.style.cssText = 'display:none;position:fixed;bottom:20px;right:50px;z-index:999999999;background:#ff6b8a;color:#fff;border:none;border-radius:50%;width:60px;height:60px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 4px 14px rgba(255,107,138,.4);line-height:60px;text-align:center;';
+  btn.style.cssText = 'display:none;position:fixed;bottom:110px;right:50px;z-index:999999999;background:#ff6b8a;color:#fff;border:none;border-radius:50%;width:60px;height:60px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 4px 14px rgba(255,107,138,.4);line-height:60px;text-align:center;';
   btn.addEventListener('click', function() {
     // 去掉 gid/qs/gameid 參數 → 回到遊戲選單（啟動器讀取第一個分頁的遊戲列表，彈出課別選單）
     var u = window.location.href
