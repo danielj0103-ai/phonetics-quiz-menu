@@ -1489,6 +1489,7 @@ start = async function() {
 // ============ 注音高手：關閉自動播放聲音補丁 ============
 (function() {
   var _origPlay = HTMLMediaElement.prototype.play;
+  var _origPause = HTMLMediaElement.prototype.pause;
   var _lastInteraction = 0;
 
   document.addEventListener('mousedown', function() { _lastInteraction = Date.now(); }, true);
@@ -1496,30 +1497,72 @@ start = async function() {
 
   HTMLMediaElement.prototype.play = function() {
     if (this.tagName === 'AUDIO') {
-      // 換新題目（src 改變）時清除解鎖狀態，讓自動播放恢復被攔截
-      if (this._lastSrc !== this.src) {
-        this._lastSrc = this.src;
-        this._soundUnlocked = false;
+      var delta = Date.now() - _lastInteraction;
+      var srcName = (this.src || '').split('/').pop().slice(0, 28);
+      if (window._dbg) window._dbg('play() AUDIO「' + srcName + '」距上次互動 ' + delta + 'ms → ' + (delta > 50 ? '攔截' : '放行'));
+      if (delta > 50) return Promise.resolve();
+      try {
+        var p = _origPlay.apply(this, arguments);
+        if (window._dbg && p && p.catch) {
+          p.catch(function(err) {
+            if (window._dbg) window._dbg('★ play() 被瀏覽器拒絕：' + (err && err.name ? err.name : err));
+          });
+        }
+        return p;
+      } catch (e) {
+        if (window._dbg) window._dbg('★ play() 丟出例外：' + e);
+        throw e;
       }
-      // 50ms 內有互動 → 使用者主動播放：放行並開啟 3 秒解鎖窗口
-      // （解鎖窗口內允許遊戲 Gf() 輪詢的 pause+play 重建，避免第一題語音下載慢時要按兩次）
-      if (Date.now() - _lastInteraction < 50 || this._soundUnlocked) {
-        var self = this;
-        this._soundUnlocked = true;
-        clearTimeout(this._unlockTimer);
-        this._unlockTimer = setTimeout(function() { self._soundUnlocked = false; }, 3000);
-        return _origPlay.apply(this, arguments);
-      }
-      return Promise.resolve();
     }
     return _origPlay.apply(this, arguments);
   };
 
+  HTMLMediaElement.prototype.pause = function() {
+    if (this.tagName === 'AUDIO' && window._dbg) window._dbg('pause() AUDIO');
+    return _origPause.apply(this, arguments);
+  };
+
   window._stopSoundPatch = function() {
     HTMLMediaElement.prototype.play = _origPlay;
+    HTMLMediaElement.prototype.pause = _origPause;
   };
 })();
 // ============ 補丁結束 ============
+
+// ============ 除錯面板（網址加 &debug=1 啟用，localStorage 跨頁有效；&debug=0 關閉） ============
+(function() {
+  if (/[?&]debug=1/.test(window.location.href)) {
+    try { localStorage.setItem('_soundDebug', '1'); } catch (e) {}
+  } else if (/[?&]debug=0/.test(window.location.href)) {
+    try { localStorage.removeItem('_soundDebug'); } catch (e) {}
+  }
+  var enabled = false;
+  try { enabled = localStorage.getItem('_soundDebug') === '1'; } catch (e) { enabled = /[?&]debug=1/.test(window.location.href); }
+  if (!enabled) return;
+
+  var panel = document.createElement('div');
+  panel.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:2147483647;background:rgba(0,0,0,.78);color:#7CFC00;font:12px/1.5 Consolas,monospace;padding:8px 10px;border-radius:8px;max-width:78vw;max-height:45vh;overflow:hidden;pointer-events:none;white-space:pre-wrap;';
+  document.body.appendChild(panel);
+  window._dbg = function(msg) {
+    var d = new Date();
+    var t = d.toLocaleTimeString('en-GB', { hour12: false }) + '.' + String(d.getMilliseconds()).padStart(3, '0');
+    var lines = ('[' + t + '] ' + msg + '\n' + panel.textContent).split('\n');
+    panel.textContent = lines.slice(0, 14).join('\n');
+  };
+  window._dbg('除錯面板啟動');
+  ['touchstart', 'touchend', 'mousedown', 'mouseup', 'click'].forEach(function(ev) {
+    document.addEventListener(ev, function(e) {
+      var el = e.target;
+      var info = el && el.tagName ? el.tagName : '?';
+      if (el && el.textContent) {
+        var t = String(el.textContent).trim().replace(/\s+/g, ' ');
+        if (t) info += '「' + t.slice(0, 10) + '」';
+      }
+      window._dbg('事件 ' + ev + ' @ ' + info);
+    }, true);
+  });
+})();
+// ============ 除錯面板結束 ============
 
 // ============ 主選單按鈕 ============
 (function() {
