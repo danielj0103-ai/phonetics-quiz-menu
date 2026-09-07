@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HTML5 FUN::自製遊戲啟動器</title>
+<title>注音高手 課別選單</title>
 <link href='https://gsyan888.github.io/html5_fun/editor/assets/icon-launcher.png' rel='image_src'/>
 <meta content='HTML5 FUN 烘焙機 自製遊戲啟動器 - 保留 Google 試算表修改遊戲列表功能' property='og:description'/>
 <style>
@@ -1422,6 +1422,16 @@ var gid = gl_getUrlParam('gid');
 var gameID = gl_getUrlParam('gameID');
 var gameIdAt = gl_getUrlParam('idat').toUpperCase() || 'A';
 var qs = gl_getUrlParam('qs');
+
+// ============ 預設題庫（單機版選單用） ============
+// 沒有網址參數時，自動載入這個試算表的遊戲列表分頁 → 直接出現課別選單
+var DEFAULT_SHEET_ID = '1eaVAbnTEDxyiimazfgcYk1JTw8B-sG6yx2IRI2zc_5k';
+if(fileId=='') {
+  sheetId = DEFAULT_SHEET_ID;   // 一定要設 sheetId，start() 是用它判斷走「試算表」分支
+  fileId = DEFAULT_SHEET_ID;
+  gid = '0';
+}
+// ============ 預設題庫結束 ============
 
 start = async function() {
   var timeDelay = /^file:/.test(window.location.href)?500:6000;
