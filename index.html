@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>注音高手 課別選單</title>
+<link href='https://gsyan888.github.io/html5_fun/editor/assets/icon-launcher.png' rel='image_src'/>
+<meta content='HTML5 FUN 烘焙機 自製遊戲啟動器 - 保留 Google 試算表修改遊戲列表功能' property='og:description'/>
+<style>
+* { box-sizing: border-box; }
+body {
+  font-family: Ubuntu, Arial, "儷黑 Pro", "LiHei Pro Medium", "文泉驛微米黑", "微軟正黑體", "Microsoft JhengHei", sans-serif;
+  margin: 0;
+  padding: 10px;
+  color: #333;
+  background: #f5f5f5;
+  text-align: center;
+}
+a { color: #f2984c; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.stage {
+  border: dashed orange 2px;
+  border-radius: 3em;
+  text-align: center;
+  margin: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  background: #fff;
+  max-width: 600px;
+}
+.inputBox {
+  border-radius: 1em;
+  border: 1px dashed gray;
+  line-height: 2em;
+  margin: auto;
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding: 1em;
+  text-align: center;
+  width: 90%;
+  max-width: 25em;
+}
+.inputBox input {
+  padding: 0.5em;
+  text-align: center;
+  width: 100%;
+  max-width: 30em;
+}
+.paramBox {
+  display: none;
+  width: 15em;
+}
+.submitBtn {
+  background: rgb(204, 255, 51);
+  border-radius: 1em;
+  border: 1px solid;
+  cursor: pointer;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: auto;
+  margin-top: 1em;
+  margin-bottom: 1.5em;
+  padding: 0.25em;
+  width: 90%;
+  text-align: center;
+}
+.submitBtn:hover { background: rgb(180, 230, 30); }
+.resultBlock { display: none; }
+.gameURL {
+  background-color: #ffff66;
+  border-radius: 1em;
+  border: 1px dashed gray;
+  line-height: 2em;
+  margin: auto;
+  margin-top: 1.25em;
+  margin-bottom: 2.5em;
+  padding: 1em;
+  text-align: center;
+  width: 90%;
+  word-break: break-all;
+}
+.playBtnWrapper { margin: auto; margin-bottom: 2em; }
+
+#rocket { position: relative; }
+#rocket-label {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, 0);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-shadow: -1px -1px 0 #ffff00, 1px -1px 0 #ffff00, -1px 1px 0 #ffff00, 1px 1px 0 #ffff00;
+}
+.rocket-launch { animation: rocketShake 0.1s infinite alternate; }
+@keyframes rocketShake { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+.rocket-flame {
+  display: none;
+  position: fixed;
+  top: calc(40% + 130px);
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.rocket-flame img { border: none; }
+
+.gameQRcode {
+  position: relative;
+  margin: auto;
+  margin-bottom: 2.5em;
+  width: 200px;
+  height: 200px;
+  padding: 5px;
+  text-align: center;
+  background-repeat: no-repeat;
+  border: 1px solid #dadce0;
+}
+.gameQRcode img {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding: 0;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  border: none;
+}
+
+.file-menu-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 5px);
+  height: calc(100% - 5px);
+  overflow-y: auto;
+  border: 1px solid #d1d1d6a0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff50;
+  background-image: repeating-radial-gradient(circle, #606dbc80, #606dbc80 10px, #46529880 10px, #46529880 20px);
+  border-radius: 1vmin;
+  border: 5px solid #465298a0;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+.file-menu-close {
+  position: fixed;
+  top: 0.75em;
+  left: calc(100% - 0.75em);
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  color: yellow;
+  cursor: pointer;
+}
+.file-menu {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 350px;
+  height: 75%;
+  overflow-y: auto;
+  border: 1px solid #d1d1d6;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border-radius: 20px;
+  border: 5px solid gold;
+  box-sizing: border-box;
+  background-image: url(https://gsyan888.github.io/html5_fun/editor/assets/icon-launcher.png);
+  background-size: 120px 120px;
+  background-repeat: no-repeat;
+  background-position: 50% 100%;
+  padding: 2em 1em;
+}
+.file-menu-item {
+  padding: 3vmin;
+  border-bottom: 1px solid #e5e5ea;
+  font-size: 4.75vmin;
+  color: #1c1c1e;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+  overflow-x: clip;
+}
+.file-menu-item:nth-child(odd) { background-color: #f9f9f9b0; }
+.file-menu-item:hover { background-color: #e5e5ea; }
+
+.menu-8in1 {
+  display: none;
+  position: fixed;
+  width: 32px;
+  top: 10px;
+  left: 10px;
+  opacity: 0.65;
+  z-index: 199999999;
+}
+.menu-8in1 button {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  color: #59636ea0;
+  background: transparent;
+  border: solid 0.0625rem #d1d9e0;
+  border-radius: 0.375rem;
+  grid-auto-columns: max-content;
+  align-items: center;
+  justify-content: center;
+}
+.menu-8in1 button svg { fill: #00000080; }
+.menu-8in1-item { margin: 10px 0; opacity: 1; }
+.menu-8in1-item img { width: 32px; height: 32px; }
+</style>
+</head>
+<body>
+
+<div id="rocket" style="clear: both;">
+  <label id="rocket-label" style="display:none;">載入中</label>
+  <a href="https://gsyan888.github.io/html5_fun/editor/assets/icon-launcher.png" style="display: block; padding: 1em 0px; text-align: center;">
+    <img alt="HTML5 FUN::Game Launcher" border="0" src="https://gsyan888.github.io/html5_fun/editor/assets/icon-launcher.png" style="border: 0px;" width="200" />
+  </a>
+</div>
+<div class="rocket-flame"><img src="https://gsyan888.github.io/html5_fun/editor/assets/icon-launcher-flame.png" /></div>
+<h1 style="text-align: center;">HTML5 FUN::自製遊戲啟動器</h1>
+
+<div class="stage" id="step1">
+    <h3 style="margin-top: 1em;">參數設定</h3>
+
+    <div class="inputBox">
+      雲端硬碟 [試算表/網頁/設定/資料夾] 共用連結網址
+    </div>
+    <div class="inputBox">
+      <input id="fileURL" onblur="fileURL_onBlurHandler(this);" size="50" type="text" value="" />
+    </div>
+
+    <div class="inputBox paramBox">
+      遊戲取用代碼
+      (欄位:&nbsp;
+      <select id="gameIdAt">
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+        <option value="E">E</option>
+        <option value="F">F</option>
+      </select>&nbsp;)
+      <br />代碼:&nbsp;
+      <select id="gameID"></select>
+    </div>
+    <div class="submitBtn" id="submitBtn" onclick="submitOnClickHandler();" title="按我">&#12304;送出參數並製作網址&#12305;</div>
+</div>
+
+<div class="stage resultBlock" id="step2">
+  <div class="playBtnWrapper"></div>
+  <h1 onclick="copyAndSelectToClipboard('gameURL');">遊戲網址<br /><span style="font-size: 11px;">(按一下複製)</span></h1>
+  <div class="gameURL" id="gameURL" onclick="copyAndSelectToClipboard('gameURL');"></div>
+  <div class="gameQRcode"></div>
+</div>
+
+<div class="menu-8in1">
+  <button aria-label="HTML5 FUN&#12288;8 in 1 menu" class="menu-8in1-btn">
+    <svg aria-hidden="true" data-view-component="true" height="16" version="1.1" viewbox="0 0 16 16" width="16">
+      <path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z"></path>
+    </svg>
+  </button>
+</div>
+
+<div style="text-align: center; margin-top: 1em;">
+  <p><a href="https://gsyan888.blogspot.com/2022/10/html5-fun-collection.html">HTML5 FUN Game Launcher::程式 by 雄 gsyan::遊戲題庫使用者自訂</a></p>
+</div>
+
+<script>
+var moduleNames = {
+  lotto:"樂透摸彩機", spelling:"單字高手", english1200:"English1200", basketball:"投籃高手",
+  baseball:"王牌投手", bubble:"戳泡泡Bubble", card_flip:"大家一起來", crossword:"填字遊戲",
+  football:"足球高手", frog:"青蛙過河", speaking:"Speaking", phonetics_quiz:"注音高手",
+  pk:"PK大賽", pk2:"PK2", sentence:"造句靈感產生器", shark:"搶救公主", bingo:"BINGO賓果",
+  charades:"我說你猜", listening:"聽音辨字", ghost:"打鬼特攻隊", match:"對對碰",
+  monster:"大嘴Monster", unscramble: "重組遊戲", gomoku: "漢字五子棋", poke: "戳戳樂",
+  wheel: "幸運轉輪", "math_whiteboard": "數學小白板", "stroke_parts": "筆順練習", "maze":"文字迷宮"
+};
+
+try{document.getElementById('gameIdAt').setAttribute('disabled', true);}catch(e){};
+
+gameInitialize = function() {
+  var playBtnWrapper = document.querySelector('.playBtnWrapper');
+  var jsList = document.querySelectorAll('#injectionJS');
+  if(typeof(jsList)!='undefined' && jsList!=null) {
+    for(var i=0; i<jsList.length; i++) { jsList[i].remove(); }
+  }
+  if(typeof(playBtnWrapper)!='undefined' && playBtnWrapper!=null) {
+    playBtnWrapper.innerHTML = '';
+  }
+};
+
+fileURL_onBlurHandler = function(fileURL) {
+  if(!fileURL) { fileURL = document.querySelector('#fileURL'); }
+  if(fileURL) {
+    fileURL.value = fileURL.value.trim();
+    var id = getGoogleDriveFileId(fileURL.value);
+    var paramBoxList = document.querySelectorAll('.paramBox');
+    var resultBlock = document.querySelector('.resultBlock');
+    if(typeof(paramBoxList)!='undefined' && paramBoxList!=null) {
+      for(var i=0; i<paramBoxList.length; i++) {
+        if(id!='' && isGoogleSheet(fileURL.value)) {
+          paramBoxList[i].style.display = 'block';
+          updateGameIdListFromSheet(fileURL.value);
+        } else {
+          paramBoxList[i].style.display = 'none';
+        }
+      }
+    }
+    if(typeof(resultBlock)!='undefined' && resultBlock!=null) {
+      resultBlock.style.display = 'none';
+    }
+  }
+};
+
+updateGameIdListFromSheet = function(url) {
+  var id, gid, gameIdAt, target;
+  if(typeof(url)=='string') {
+    target = 'form';
+    try{document.getElementById('gameID').innerHTML = '';}catch(e){};
+    id = getGoogleDriveFileId(url);
+    gid = gl_getUrlParam('gid', url);
+    try{gameIdAt = document.getElementById('gameIdAt').value.trim();}catch(e){};
+  } else {
+    target = 'createMenu';
+    id = url.sheet;
+    gid = url.gid;
+    gameIdAt = url.gameIdAt;
+  }
+  if(typeof(gameIdAt)!='string' || gameIdAt=='') { gameIdAt = 'A'; }
+  gameIdAt = gameIdAt.toUpperCase();
+  var sql = `SELECT * WHERE ${gameIdAt} <> '' AND ${gameIdAt} IS NOT NULL`;
+  var queryURL = getSheetQueryURL(id, gid, '', sql, '*', gameIdAt);
+  getSpreadSheetQueryResponse(queryURL, function(data){
+    updateGameIdList(data, gameIdAt, url, target);
+  });
+};
+
+updateGameIdList = function(data, gameIdAt, url, target) {
+  var isSWFSheet = false;
+  var values = [];
+  var values_sheet_url = [];
+  var label = [];
+  var GAME_ID = '';
+  var cols, col;
+  if(data && typeof(data['status'])=='string' && data['status']=='ok') {
+    if(typeof(data['table']['cols'])!='undefined' && data['table']['cols']!=null && data['table']['cols'].length>0) {
+      cols = data['table']['cols'];
+      for(var i=0; i<cols.length; i++) {
+        label.push(typeof(cols[i]['label'])=='string'?cols[i]['label']:'');
+      }
+    }
+    if(typeof(data['table']['rows'])!='undefined' && data['table']['rows']!=null && data['table']['rows'].length>0) {
+      var rows = data['table']['rows'];
+      for(var i=0; i<rows.length; i++) {
+        if(target == 'form') {
+          if(label.length >=3 && label[0] == '參數說明' && label[1] == '參數名稱' && label[2] == '設定值') {
+            if(typeof(rows[i]['c'][1])!='undefined' && rows[i]['c'][1]!=null && typeof(rows[i]['c'][1]['v'])!='undefined' && rows[i]['c'][1]['v']=='GAME_ID') {
+              if(typeof(rows[i]['c'][2])!='undefined' && rows[i]['c'][2]!=null && typeof(rows[i]['c'][2]['v'])!='undefined' && rows[i]['c'][2]['v']!='') {
+                GAME_ID = rows[i]['c'][2]['v'];
+                break;
+              }
+            } else if(typeof(rows[i]['c'][1])!='undefined' && rows[i]['c'][1]!=null && typeof(rows[i]['c'][1]['v'])!='undefined' && rows[i]['c'][1]['v']=='SWF_ID') {
+              isSWFSheet = true;
+              break;
+            }
+          } else if(label.length > 0 && !/取用代碼/.test(label[0])) {
+            break;
+          }
+        }
+        col = rows[i]['c'][0];
+        if(typeof(col)!='undefined' && col!=null && typeof(col['v'])!='undefined') {
+          values.push(col['v']);
+          col = rows[i]['c'][1];
+          col = (typeof(col)!='undefined' && col!=null && typeof(col['v'])!='undefined' && col['v']!=null ? col['v']: '');
+          values_sheet_url.push((getGoogleDriveFileId(col) && isGoogleSheet(col) ? col: ''));
+        }
+      }
+    }
+  }
+  if(target == 'form') {
+    var idSelector = document.getElementById('gameID');
+    if(idSelector) {
+      var html = '';
+      if(GAME_ID != '') {
+        values.push(url);
+        html += '<option value="' + url + '" selected>' + (typeof(moduleNames[GAME_ID])=='string'?moduleNames[GAME_ID]:'不明的') + '</option>\n';
+      } else {
+        for(var i=0; i<values.length; i++) {
+          html += '<option value="' + values[i] + '"' + (values_sheet_url[i]!=""?' sheet_url="' + values_sheet_url[i] + '"':'')  + '>' + values[i] + '</option>\n';
+        }
+      }
+      if(values.length > 1) {
+        html += '<option value="**make-menu-link**">所有遊戲(選單模式)</option>\n';
+      }
+      idSelector.insertAdjacentHTML('beforeend', html);
+      try{document.getElementById('gameID').focus();} catch(e){};
+    }
+  } else if(target == 'createMenu') {
+    if(label.length >0 && /(取用|代碼)/.test(label[0])) {
+      var menuItems = [];
+      var gameURL, id, gid;
+      for(var i=0; i<values.length; i++) {
+        if(values_sheet_url[i] != '') {
+          id = getGoogleDriveFileId(values_sheet_url[i]);
+          gid = gl_getUrlParam('gid',  values_sheet_url[i]);
+          gameURL = getGameURL(id, '', 'FakeGameID', url.gameIdAt, gid);
+          gameURL = gameURL.replace(/&gameid=[^&]+/, '');
+        } else {
+          gameURL = getGameURL(url.sheet, '', values[i], url.gameIdAt, url.gid);
+        }
+        menuItems.push([gameURL, values[i]]);
+      }
+      rocketLaunch(false);
+      createGameMenu(menuItems);
+    } else if(label.length >= 3 && label[0] == '參數說明' && label[1] == '參數名稱' && label[2] == '設定值') {
+      var qURL = getSheetQueryURL(url['sheet'], url['gid'], '', '', 'https://null', url['gameIdAt']);
+      qURL = qURL.replace(/&tq=[^&]+/, '');
+      getSpreadSheetQueryResponse(qURL, questionSheetToSettingJS);
+    }
+  }
+  if(values.length == 0) {
+    var paramBox = document.querySelector('.paramBox');
+    if(paramBox) { paramBox.style.display = 'none'; }
+    if(isSWFSheet) {
+      gl_showMessage('這個試算表看起來是 Flash 遊戲的，不是 HTML5 FUN 的哦!\n\n按 [確定] 鈕後, 按您重導至 FLASH SWF 啟動器');
+      window.location.href = 'https://gsyan888.blogspot.com/p/ruffle.html';
+    } else {
+      gl_showMessage('找不到任何遊戲取用代碼\n\n請確認一下試算表的網址或是「欄' + gameIdAt + '」有「取用代碼」的資料');
+    }
+  }
+};
+
+updateQRCode = function(gameURL) {
+  var gameQRcode = document.querySelector('.gameQRcode');
+  if(gameQRcode) {
+    var size = 180;
+    var qrcodeURL = 'https://api.qrserver.com/v1/create-qr-code/?size='+size+'x'+size+'&data='+encodeURIComponent(gameURL);
+    gameQRcode.innerHTML = '<a href="' + gameURL +'" target="_blank" title="按 QR code 可以開啟遊戲"><img src="'+ qrcodeURL + '"/></a>';
+  }
+};
+
+isGameIdUpdated = function() {
+  var elm = document.getElementById('gameID');
+  return elm && elm.innerHTML != '';
+};
+
+getSelectedText = function(q){
+  var t = '';
+  var e = document.querySelector(q);
+  if(e) { t = e.options[e.selectedIndex].text; }
+  return t;
+};
+
+submitOnClickHandler = async function() {
+  var resultBlock = document.querySelector('.resultBlock');
+  var playBtnWrapper = document.querySelector('.playBtnWrapper');
+  var fileURL = document.getElementById('fileURL').value.trim();
+  var id = getGoogleDriveFileId(fileURL);
+  var fid = getGoogleDriveFolderId(fileURL);
+
+  gameInitialize();
+  if(typeof(resultBlock)!='undefined' && resultBlock!=null) { resultBlock.style.display = 'none'; }
+
+  if(isGoogleSheet(fileURL)) {
+    var sheetName, gameID, gameIdAt, gid, url;
+    try{sheetName = document.getElementById('sheetName').value.trim();}catch(e){};
+    try{gameID = document.getElementById('gameID').value.trim();}catch(e){};
+    try{gameIdAt = document.getElementById('gameIdAt').value.trim();}catch(e){};
+    gid = gl_getUrlParam('gid', fileURL);
+    url  = getSheetQueryURL(id, gid, sheetName, '', gameID, gameIdAt, 'isTest');
+    if(url != '') {
+      if(isGameIdUpdated()) {
+        var is_sheet_url = false;
+        var sheet_url_value = '';
+        var e = document.querySelector('#gameID');
+        if(e) {
+          sheet_url_value = e.options[e.selectedIndex].getAttribute('sheet_url') || '';
+          is_sheet_url = sheet_url_value.replace(/\s/g, '') != '';
+        }
+        setTimeout(function() {
+          var gameURL = '';
+          var isQuestionSheet = false;
+          if(typeof(resultBlock)!='undefined' && resultBlock!=null) { resultBlock.style.display = 'block'; }
+          if(gameID == '**make-menu-link**') {
+            gameURL = getGameURL(id, sheetName, '', gameIdAt, gid);
+          } else if(fileURL.trim() == gameID) {
+            isQuestionSheet = true;
+            gameURL = getGameURL(id, sheetName, '', gameIdAt, gid) + '&qs=1';
+          } else {
+            if(is_sheet_url) {
+              var shId = getGoogleDriveFileId(sheet_url_value);
+              var shGid = gl_getUrlParam('gid', sheet_url_value);
+              gameURL = getGameURL(shId, '', 'FakeGameID', gameIdAt, shGid);
+              gameURL = gameURL.replace(/&gameid=[^&]+/, '');
+            } else {
+              gameURL = getGameURL(id, sheetName, gameID, gameIdAt, gid);
+            }
+          }
+          try { document.querySelector('.gameURL').innerHTML = gameURL; } catch(e) { console.log(e); };
+          updateQRCode(gameURL);
+          autostart = false;
+          if(isQuestionSheet) {
+            url = url.replace(/&tq=[^&]+/, '');
+            getSpreadSheetQueryResponse(url, questionSheetToSettingJS);
+          } else if(gameID != '**make-menu-link**') {
+            if(!is_sheet_url) {
+              getSpreadSheetQueryResponse(url, loadJavascriptAndStartGame);
+            }
+          }
+          jumpToAnother(1, 2);
+        }, 100);
+      }
+    }
+  } else if(id!='' || fid!='') {
+    var gameURL = getGameURL(id!=''?id:fid);
+    if(fid!='') { gameURL = gameURL.replace(/\?id=/, '?fid='); }
+    setTimeout(function() {
+      if(typeof(resultBlock)!='undefined' && resultBlock!=null) { resultBlock.style.display = 'block'; }
+      try { document.querySelector('.gameURL').innerHTML = gameURL; } catch(e) { console.log(e); };
+      updateQRCode(gameURL);
+      autostart = false;
+      if(id!='') {
+        fetchFileFromGoogleDrive(fileURL, replaceHtmlAndStartGame);
+      } else {
+        gdGetFolderInfo(fileURL, function(info){showMenuByFolderInfo(info, true);});
+      }
+      jumpToAnother(1, 2);
+    }, 10);
+  }
+};
+
+callbackAfterClosed = function() {
+  setTimeout( function() {
+    var elm = document.getElementById('step2');
+    if (typeof(elm)!='undefined' && elm!=null) {
+      window.scrollBy({ top: elm.offsetTop, left: 0, behavior: 'smooth' });
+    }
+  },100);
+};
+
+jumpToAnother = function (from, to) {
+  if(!isNaN(to)) { to = document.getElementById('step' + to); }
+  else if(typeof(to)=='string') { to = document.getElementById(to); }
+  if(!isNaN(from)) { from = document.getElementById('step' + from); }
+  else if(typeof(from)=='string') { from = document.getElementById(from); }
+  var offset = to.offsetTop - from.offsetTop;
+  var y = offset + from.offsetTop - window.scrollY - 10;
+  window.scrollBy({ top: y, left: 0, behavior: 'smooth' });
+};
+
+isVocarooURL = function(str) {
+  return ((new RegExp('(https\\:\\/\\/voca\\.ro|https\\:\\/\\/vocaroo\\.com)\\/(\\w{12})', 'i')).test(str));
+};
+
+getVocarooURL = function(str) {
+  var vocarooMp3Base = 'https://media.vocaroo.com/mp3';
+  var data = '';
+  if(typeof(str)=='string' && isVocarooURL(str.trim())) { data = window['RegExp']['$2']; }
+  return (data.replace(/\s/g, '')!=''?vocarooMp3Base+'/'+data+'?my.mp3':str);
+};
+
+gl_getUrlParam = function(name, url) {
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp(regexS, 'i');
+  var results = regex.exec((typeof(url)=='string'?url:window.location.href));
+  if(results==null) return "";
+  else return decodeURIComponent(results[1]);
+};
+
+getGoogleDriveFileId = function(url) {
+  var id = '';
+  if(!(/^https\:\/\//i.test(url))) { id = url.trim(); }
+  else if(match=url.match(/\/d\/([^\/]{20}[^\/]+)\//)) { id = match[1]; }
+  else { id = gl_getUrlParam('id', url); }
+  return id;
+};
+
+getGoogleDriveFolderId = function(url) {
+  var match;
+  url = url.trim();
+  if(match=url.match(/https:\/\/drive\.google\.com\/drive\/folders\/([^\?]+)\?/)) { return match[1]; }
+  else if(match=url.match(/https:\/\/drive\.google\.com\/drive\/u\/[^\/]+\/folders\/(.*)$/)) { return match[1]; }
+  return '';
+};
+
+isGoogleSheet = function(url) { return (/sheet/i.test(url)); };
+isGoogleFolder = function(url) { return (/\/folders\//.test(url)); };
+
+reloadInjectionJS = function(modulename, attributes, debug) {
+  var parentNode;
+  var oldJS = document.getElementById('injectionJS');
+  if(typeof(oldJS)!='undefined' && oldJS!=null) {
+    parentNode = oldJS.parentNode;
+    oldJS.parentNode.removeChild(oldJS);
+    if(typeof(attributes)=='undefined') {
+      var attributes = {};
+      for(var index=0; index<oldJS.attributes.length; index++) {
+        var obj = oldJS.attributes[index];
+        attributes[obj['name']] = obj['value'];
+      }
+    }
+  } else {
+    parentNode = document.getElementsByTagName('head')[0];
+  }
+  var nocache = '?nocache=' + new Date().getTime();
+  var scriptTag = document.createElement('script');
+  scriptTag.type = "text/javascript";
+  scriptTag.charset = "utf-8";
+  scriptTag.id = 'injectionJS';
+  scriptTag.src = (debug ? "./" : "https://gsyan888.github.io/html5_fun/")+"html5_fun_embeded.js" + nocache;
+  scriptTag.setAttribute('autostart', "false");
+  if(typeof(attributes)=='object' && attributes!=null) {
+    var keys = Object.keys(attributes);
+    for(var i=0; i<keys.length; i++) { scriptTag.setAttribute(keys[i], attributes[keys[i]]); }
+  }
+  if(typeof(modulename)=='string') { scriptTag.setAttribute('modulename', modulename); }
+  if(typeof(autostart)=='boolean') {
+    scriptTag.setAttribute('autostart', `${autostart}`);
+    if(typeof(replaceStrokeMenuEvent)=='function') { replaceStrokeMenuEvent(modulename); }
+  }
+  parentNode.appendChild(scriptTag);
+};
+
+replaceStrokeMenuEvent = function(mod) {
+  rocketLaunch(false);
+  if(mod && mod == 'stroke_parts') {
+    if(typeof(window['replaceCloseHandlerId']) == 'number') { clearInterval(window['replaceCloseHandlerId']); }
+    window['replaceCloseHandlerTime'] = new Date();
+    window['replaceCloseHandlerId'] = setInterval(function() {
+      var done = false;
+      var underConstruction = document.querySelector('.inputBox') != null;
+      var btn = document.getElementById('closeBtn');
+      if(!underConstruction && btn && btn.style.display == 'none') {
+        btn.style.display = 'block';
+        btn.title = '回到選單';
+        var onclick = function(e) {
+          var u = window.location.href.replace(/&gameid=[^&]+/, '');
+          window.location = u;
+        };
+        btn = btn.children[0];
+        btn.ontouchstart = onclick;
+        btn.onmousedown = onclick;
+        done = true;
+      }
+      if(done || ((new Date()) - window['replaceCloseHandlerTime']) >= 20000) {
+        clearInterval(window['replaceCloseHandlerId']);
+        window['replaceCloseHandlerId'] = null;
+      }
+    }, 200);
+  }
+  if(typeof(autostart)=='boolean' && !autostart) {
+    setTimeout(function() {
+      var btn = document.querySelector('#playButton .buttonFront');
+      if(btn) { btn.innerHTML = btn.innerHTML.replace(/玩/, '測試'); }
+    }, 500);
+  } else {
+    setTimeout(function() {
+      if(typeof(HTML5FunScript)=='string' && /basketball|baseball|football|frog|pk|pk2|shark|ghost/.test(HTML5FunScript)) {
+        var menu = document.querySelector('.menu-8in1');
+        var iconUrl = 'https://gsyan888.github.io/html5_fun/html5_{module}/assets/icon.png';
+        var item;
+        if(menu) {
+          menu.style.display = 'block';
+          menu.children[0].onmousedown = menuClickHandler;
+          menu.children[0].ontouchstart = menuClickHandler;
+        }
+      }
+    }, 3500);
+  }
+};
+
+function changeGameTemplate(e) {
+  try{e.preventDefault();}catch(err){};
+  var m = e.target.parentElement.getAttribute('module');
+  if(m && typeof(moduleNames[m]) != 'undefined') {
+    try{ closeApp(); }catch(err){};
+    menuClickHandler(true);
+    rocketLaunch(true);
+    setTimeout(function() { reloadInjectionJS(m); }, 350);
+    setTimeout(function() {
+      var btn = document.getElementById('closeBtn');
+      if(btn) { btn.style.display = 'none'; }
+    }, 3000);
+  }
+}
+
+function menuClickHandler(e) {
+  var menu = document.querySelector('.menu-8in1');
+  var iconUrl = 'https://gsyan888.github.io/html5_fun/html5_{module}/assets/icon.png';
+  var item;
+  try{hideAll.preventDefault();}catch(err){};
+  var hideAll = e;
+  if(typeof(hideAll)!='boolean') { hideAll = false; }
+  if(menu) {
+    if(menu.children.length == 1) {
+      var a = 'basketball|baseball|football|frog|pk|pk2|shark|ghost'.split('|');
+      for(var i=0; i<a.length; i++) {
+        item = document.createElement('button');
+        item.setAttribute('class', 'menu-8in1-btn menu-8in1-item');
+        item.style.display = 'none';
+        item.setAttribute('module', a[i]);
+        item.onmousedown = changeGameTemplate;
+        item.ontouchstart = changeGameTemplate;
+        item.innerHTML = '<img src="' + iconUrl.replace(/{module}/, a[i]) + '">';
+        menu.appendChild(item);
+      }
+    }
+    var value = 'none';
+    if(menu.children[1].style.display != 'grid') { value = 'grid'; }
+    if(hideAll) { value = 'none'; menu.style.display = value; }
+    for(var i=1; i<menu.children.length; i++) { menu.children[i].style.display = value; }
+  }
+}
+
+copyAndSelectToClipboard = function (target) {
+  if (typeof(target) == 'string') { target = document.getElementById(target); }
+  if (typeof(target)!='undefined' && target!=null) {
+    if(/input|textarea/i.test(target.tagName)) {
+      target.select();
+      document.execCommand("copy");
+    } else {
+      var tempElm = document.createElement('textarea');
+      tempElm.style = 'width:1;height:1;border:0;';
+      tempElm.textContent = target.textContent;
+      document.body.append(tempElm);
+      tempElm.select();
+      document.execCommand("copy");
+      tempElm.remove();
+      tempElm = null;
+      var range = document.createRange();
+      range.selectNode(target);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    }
+    setTimeout(function () { window.getSelection().removeAllRanges(); }, 300);
+  }
+};
+
+getGameURL = function(id, sheetName, gameID, gameIdAt, gid) {
+  var gameURL = window.location.href;
+  gameURL = new URL(gameURL);
+  gameURL.hash = '';
+  gameURL.search = '';
+  if(typeof(id)=='string' && typeof(gameID)!='string') {
+    gameURL = gameURL.toString() + '?id=' + id;
+  } else {
+    gameURL = gameURL.toString()+'?sheet=' + id;
+    if(typeof(gid) == 'string' && gid.replace(/\s/g, '')!='') {
+      gameURL += '&gid=' + gid;
+    } else if(typeof(sheetName)=='string' && sheetName.replace(/\s/g, '')!='') {
+      gameURL += '&sheetname=' + encodeURIComponent(sheetName);
+    }
+    if(typeof(gameID) == 'string' && gameID.replace(/\s/g, '')!='') {
+      gameURL += '&gameid=' + encodeURIComponent(gameID);
+    }
+    if(typeof(gameIdAt)=='string' && gameIdAt.replace(/\s/g, '')!='' && gameIdAt.toUpperCase() != 'A') {
+      gameURL += '&idat=' + gameIdAt.toUpperCase();
+    }
+  }
+  return gameURL;
+};
+
+base64_decode = function(data) {
+  var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+  var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, dec = "", tmp_arr = [];
+  if (!data) { return data; }
+  data += '';
+  do {
+    h1 = b64.indexOf(data.charAt(i++));
+    h2 = b64.indexOf(data.charAt(i++));
+    h3 = b64.indexOf(data.charAt(i++));
+    h4 = b64.indexOf(data.charAt(i++));
+    bits = h1 << 18 | h2 << 12 | h3 << 6 | h4;
+    o1 = bits >> 16 & 0xff;
+    o2 = bits >> 8 & 0xff;
+    o3 = bits & 0xff;
+    if (h3 == 64) { tmp_arr[ac++] = String.fromCharCode(o1); }
+    else if (h4 == 64) { tmp_arr[ac++] = String.fromCharCode(o1, o2); }
+    else { tmp_arr[ac++] = String.fromCharCode(o1, o2, o3); }
+  } while (i < data.length);
+  dec = tmp_arr.join('');
+  return dec;
+};
+
+base64_encode = function(data) {
+  var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+  var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, enc = "", tmp_arr = [];
+  if (!data) { return data; }
+  do {
+    o1 = data.charCodeAt(i++);
+    o2 = data.charCodeAt(i++);
+    o3 = data.charCodeAt(i++);
+    bits = o1 << 16 | o2 << 8 | o3;
+    h1 = bits >> 18 & 0x3f;
+    h2 = bits >> 12 & 0x3f;
+    h3 = bits >> 6 & 0x3f;
+    h4 = bits & 0x3f;
+    tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
+  } while (i < data.length);
+  enc = tmp_arr.join('');
+  var r = data.length % 3;
+  return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3);
+};
+
+utf16to8 = function(str) {
+  var out, i, len, c;
+  out = "";
+  len = str.length;
+  for(i = 0; i < len; i++) {
+    c = str.charCodeAt(i);
+    if ((c >= 0x0001) && (c <= 0x007F)) { out += str.charAt(i); }
+    else if (c > 0x07FF) {
+      out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+      out += String.fromCharCode(0x80 | ((c >>  6) & 0x3F));
+      out += String.fromCharCode(0x80 | ((c >>  0) & 0x3F));
+    } else {
+      out += String.fromCharCode(0xC0 | ((c >>  6) & 0x1F));
+      out += String.fromCharCode(0x80 | ((c >>  0) & 0x3F));
+    }
+  }
+  return out;
+};
+
+utf8to16 = function(str) {
+  var out, i, len, c;
+  var char2, char3;
+  out = "";
+  len = str.length;
+  i = 0;
+  while(i < len) {
+    c = str.charCodeAt(i++);
+    switch(c >> 4) {
+      case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+        out += str.charAt(i-1);
+        break;
+      case 12: case 13:
+        char2 = str.charCodeAt(i++);
+        out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+        break;
+      case 14:
+        char2 = str.charCodeAt(i++);
+        char3 = str.charCodeAt(i++);
+        out += String.fromCharCode(((c & 0x0F) << 12) | ((char2 & 0x3F) << 6) | ((char3 & 0x3F) << 0));
+        break;
+    }
+  }
+  return out;
+};
+
+function gdGetSpreadSheetUrl(id, gid) {
+  return 'https://docs.google.com/spreadsheets/d/'+id+'/edit?usp=sharing'+(typeof(gid)=='string' && gid!=''?'&gid='+gid+'#gid='+gid:'');
+}
+
+getSheetQueryURL = function(id, gid, sheetName, sql, gameID, gameIdAt, isTest) {
+  var url = '';
+  var msg = '';
+  if(typeof(id)!='string' || id.length<30) {
+    msg = '請輸入並檢查一下試算表的共用連結網址或文件代碼後，再試一次';
+  } else if(typeof(gameID)!='string' || gameID.replace(/\s/g, '')=='') {
+    msg = '請選取「遊戲取用代碼」後，再繼續';
+  } else {
+    if(typeof(gameIdAt)!='string' || gameIdAt=='') { gameIdAt = 'A'; }
+    var query = `SELECT * WHERE ${gameIdAt} = '${gameID}'`;
+    if(typeof(sql)=='string' && sql != '') { query = sql; }
+    query = encodeURIComponent(query);
+    url = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?`;
+    if(typeof(gid) == 'string' && gid.replace(/\s/g, '') != '') { url += 'gid=' + gid; }
+    else { url += (typeof(sheetName)=='string' && sheetName.replace(/\s/g, '')!=''? 'sheet=' + encodeURIComponent(sheetName) : ''); }
+    url += '&tq='+query;
+    url += '&headers=1';
+    if(!/https:\/\/.*/.test(gameID)) { window['gameID'] = gameID; }
+    window['gameIdAt'] = gameIdAt.toUpperCase();
+  }
+  if(msg!='' && typeof(isTest)!='undefined') { gl_showMessage(msg); }
+  return url;
+};
+
+fetchSheetData = function(url, callback) {
+  fetch(url)
+    .then(res => res.text())
+    .then(rep => {
+      const jsonData = JSON.parse(rep.substring(47).slice(0, -2));
+      if(typeof(callback)=='function') { callback(jsonData); }
+      return;
+    });
+};
+
+getSpreadSheetQueryResponse = function(url, callback) {
+  var nocacheVal = 'nocache=' + new Date().getTime();
+  var scriptToAdd = document.createElement('script');
+  if(typeof(google)=='undefined') { google = {}; }
+  if(typeof(google['visualization'])=='undefined') { google['visualization'] = {}; }
+  if(typeof(google['visualization']['Query'])=='undefined') { google['visualization']['Query'] = {};}
+  google['visualization']['Query']['setResponse'] = callback;
+  scriptToAdd.setAttribute('type','text/javascript');
+  scriptToAdd.setAttribute('charset','utf-8');
+  url += (url.indexOf('?')>0?'&':'?') + nocacheVal;
+  scriptToAdd.setAttribute('src', url);
+  scriptToAdd.onload = scriptToAdd.onreadystatechange = function() {
+    if (!scriptToAdd.readyState || scriptToAdd.readyState === "loaded" || scriptToAdd.readyState === "complete") {
+      scriptToAdd.onload = scriptToAdd.onreadystatechange = null;
+      document.getElementsByTagName('head')[0].removeChild(scriptToAdd);
+    }
+  };
+  scriptToAdd.onerror = function() {
+    scriptToAdd.onerror = null;
+    document.getElementsByTagName('head')[0].removeChild(scriptToAdd);
+    if( typeof callback == 'function' ) { callback(); }
+    else {
+      var msg = '無法載入遊戲設定.';
+      var resultBlock = document.querySelector('.resultBlock');
+      if(typeof(resultBlock)!='undefined' && resultBlock!=null) {
+        msg += '\n\n請確認一下:\n\n* 試算表共用連結的網址是否正確, \n\n* 是否開放任何人都可以檢視.';
+        resultBlock.style.display = 'none';
+      }
+      setTimeout(function() { gl_showMessage(msg); }, 100);
+    }
+  };
+  var docHead = document.getElementsByTagName("head")[0];
+  docHead.insertBefore(scriptToAdd, docHead.firstChild);
+};
+
+questionSheetToSettingJS = async function(data) {
+  var GAME_ID = '';
+  var TEMPLATE = '';
+  var gameVars = {};
+  var foundQindex = false;
+  var values, value, varName;
+  var questionLines = '';
+  var fields, mediaFields, rows, row, cols;
+  var isOK = false;
+  if(data && typeof(data['status'])=='string' && data['status']=='ok') {
+    if(typeof(data['table']['rows'])!='undefined' && data['table']['rows']!=null && data['table']['rows'].length>0) {
+      rows = [];
+      for(var r=0; r<data['table']['rows'].length; r++) {
+        values = [];
+        row = data['table']['rows'][r];
+        for(var i=0; i<row['c'].length; i++) {
+          col = row['c'][i];
+          if(typeof(col)!='undefined' && col!=null) { values.push(col['v']); }
+          else { values.push(''); }
+        }
+        rows.push(values);
+      }
+      for(var i=0; i<rows.length; i++) {
+        values = rows[i];
+        if(typeof(values[1])=='string') {
+          if( /\*{3}題庫\*{3}/.test(values[1]) ) { foundQindex = true; }
+          else if(foundQindex && (
+                          (typeof(values[2])=='string' && values[2].length > 0)
+                       || (/(poke|lotto)/.test(GAME_ID) && values.slice(2).filter(w=>(w!=null && w.toString().replace(/\s/g,'')!='')).length > 0)
+                     )
+                   ) {
+            fields = [];
+            mediaFields = [[], []];
+            for(var j=2; j<values.length; j++) {
+              if(typeof(values[j])=='undefined' || values[j]==null) { values[j] = ''; }
+              else { values[j] = values[j].toString(); values[j] = getVocarooURL(values[j]); }
+              if(/poke/.test(GAME_ID) && j<=5) { mediaFields[0].push(values[j]); }
+              else if(/lotto/.test(GAME_ID) && j<=7  || (/wheel/.test(GAME_ID) && j<=6)) {
+                if((/lotto/.test(GAME_ID) && j <= 3)  || (/wheel/.test(GAME_ID) && j==2)) { mediaFields[0].push(values[j]); }
+                else { mediaFields[1].push(values[j]); }
+              } else { fields.push(values[j]); }
+            }
+            for(var m=mediaFields.length-1; m>=0; m--) {
+              if(mediaFields[m].length > 0) {
+                for(var k=mediaFields[m].length-1; k>=0; k--) {
+                  if(mediaFields[m][k].replace(/\s/g,'')=='') { mediaFields[m].splice(k, 1); }
+                }
+                if(mediaFields[m].length > 0) { fields.splice(0, 0, mediaFields[m].join('~~')); }
+              }
+            }
+            for(var k=fields.length-1; k>0; k--) {
+              if(fields[k]=='') { fields.splice(k, 1); } else { break; }
+            }
+            if(fields.length >= 0) { questionLines += fields.join('##')+'\n'; }
+          } else if(/[a-zA-Z0-9\_]/.test(values[1])) {
+            if(typeof(values[2])== 'undefined' || values[2]==null) { values[2] = ''; }
+            if(values[1] == 'GAME_ID') { GAME_ID = values[2]; }
+            else if(values[1] == 'TEMPLATE') { TEMPLATE = values[2]; }
+            else {
+              if(/unscramble/.test(GAME_ID) && values[1] == 'split_seperator' && values[2]=='一個空格') { values[2] = ' '; }
+              gameVars[values[1]] = values[2];
+            }
+          }
+        }
+      }
+    }
+  }
+  if(GAME_ID != '') {
+    var html = '';
+    var js = await fetch(TEMPLATE)
+          .then((response) => {
+            if (response.ok) { return response.text(); }
+            else { console.log('無法讀取'); }
+            throw new Error('無法讀取範本檔');
+          })
+          .catch(error => console.error('無法存取\n'+error));
+    if(typeof(js)=='string' && js!='') {
+      var keys = Object.keys(gameVars);
+      var re, m;
+      for(var i=0; i<keys.length; i++) {
+        value = gameVars[keys[i]];
+        if(/(helpDialogDescription|gameMode_\d_Caption)/.test(keys[i])) { value = value.replace(/\n/g, '\\n'); }
+        re = new RegExp('(\n' + '\\s*' + keys[i] + '\\s*=\\s*)([^\\n]+)');
+        if(m = js.match(re)) {
+          if(typeof(m[2]) == 'string') {
+            if(/^(true|false)/.test(m[2])) { js = js.replace(re, '$1' + (value=='TRUE'?'true':'false') + ';'); }
+            else if(/^[0-9\-\.]+/.test(m[2])) { js = js.replace(re, '$1' + value + ';'); }
+            else if(/^['"]/.test(m[2])) { js = js.replace(re, '$1"' + value + '";'); }
+            else if(/\[[^\]]+\]/.test(m[2])) { js = js.replace(re, '$1[' + value + '];'); }
+          }
+        }
+      }
+      re = /(questionLines = function\(\)\{\/\*--這一行請勿更改--)(?:.|\n|\r)*?(-----\*)/m;
+      js = js.replace(re, '$1' + "\n" + questionLines + "\n" + '$2');
+      html = '<script charset="utf-8" id="settingJS" type="text\/javascript">\n';
+      html += js;
+      html += '\n<\/script>';
+      html += '\n<script type="text\/javascript" charset="utf-8" id="injectionJS" src="https://gsyan888.github.io/html5_fun/html5_fun_embeded.js" autostart="false" modulename="' + GAME_ID + '"><\/script>';
+      document.querySelector('.playBtnWrapper').innerHTML = html;
+      reloadInjectionJS();
+    }
+  }
+};
+
+loadJavascriptAndStartGame = function(data) {
+  var isOK = false;
+  if(data && typeof(data['status'])=='string' && data['status']=='ok') {
+    if(typeof(data['table']['rows'])!='undefined' && data['table']['rows']!=null && data['table']['rows'].length>0) {
+      var gameIdIndex = gameIdAt.toUpperCase().charCodeAt(0)-'A'.charCodeAt(0);
+      gameIdIndex = (gameIdIndex>=0 && gameIdIndex<data['table']['rows'][0]['c'].length?gameIdIndex:0);
+      if(data['table']['rows'][0]['c'][gameIdIndex]['v']==window['gameID']) {
+        var total = data['table']['rows'][0]['c'].length;
+        var value = '';
+        for(var i=gameIdIndex+1; i<total; i++) {
+          if(typeof(data['table']['rows'][0]['c'][i])!='undefined' && data['table']['rows'][0]['c'][i]!=null) {
+            if(typeof(data['table']['rows'][0]['c'][i]['v'])=='string') { value += data['table']['rows'][0]['c'][i]['v'].trim(); }
+          }
+        }
+        if(getGoogleDriveFileId(value) && isGoogleSheet(value)) {
+          isOK = true;
+          value = value.trim();
+          var id = getGoogleDriveFileId(value);
+          var gid = gl_getUrlParam('gid', value);
+          var idat = gl_getUrlParam('idat', value).toUpperCase();
+          updateGameIdListFromSheet({sheet:id, gid:gid, gameIdAt:idat});
+        } else if( value.trim().length > 0
+                   && (  typeof(data['table']['cols'])!='undefined'
+                      && data['table']['cols']!=null && data['table']['cols'].length>1
+                      && typeof(data['table']['cols'][1]['label'])=='string'
+                      && /生字|筆順/.test(data['table']['cols'][1]['label'])
+                      )
+                   || (value.indexOf('stroke_parts.html')>=0 && /(words|parts)=/.test(value))
+                   || value.trim().replace(/[a-zA-Z0-9+=_,;\-\.\*]/g, '') == value.trim()
+            ) {
+          isOK = true;
+          window['dataFromSheet'] = value;
+          document.querySelector('.playBtnWrapper').innerHTML = '<div id="settingJS"></div>';
+          reloadInjectionJS('stroke_parts');
+        } else {
+          if(!/settingJS|injectionJS|html5_fun_embeded.js/.test(value)) { value = utf8to16(base64_decode(value)); }
+          if(/settingJS|injectionJS|html5_fun_embeded.js/.test(value)) {
+            isOK = true;
+            document.querySelector('.playBtnWrapper').innerHTML = value;
+            reloadInjectionJS();
+          }
+        }
+      }
+    }
+  }
+  if(!isOK) {
+    var msg = '抱歉，找不到指定的遊戲，或是無法載入遊戲設定。';
+    var resultBlock = document.querySelector('.resultBlock');
+    if(typeof(resultBlock)!='undefined' && resultBlock!=null) {
+      msg += '\n\n請確認一下「工作表名稱」及「欄'+gameIdAt.toUpperCase()+'」的「取用代碼」是否正確';
+      resultBlock.style.display = 'none';
+    }
+    rocketLaunch(false);
+    setTimeout(function() { gl_showMessage(msg); }, 100);
+  }
+};
+
+function gdFileShareParse(html, debug) {
+  var data=null, value=null;
+  try { data = html.match(/<script[^>]+>\s*window\.viewerData\s*=\s*({(?:.|\n)*?});<\/script>/im).pop(); } catch(e) {};
+  if(data != null) {
+    data = data.replace(/'/g, '"').replace('config:', '"config":').replace('configJson:', '"configJson":').replace('itemJson:', '"itemJson":');
+    data = data.replace('"viewer-web",', '"viewer-web"');
+    data = JSON.parse(data);
+    if(typeof(debug)=='boolean' && debug) { console.log(data); }
+    value = {
+      filename: data.itemJson[1],
+      url: data.itemJson[2]?data.itemJson[2]:data.itemJson[18],
+      url_9: data.itemJson[9],
+      url_18: data.itemJson[18],
+      mimeType: data.itemJson[11],
+      raw: data.itemJson
+    };
+  }
+  return value;
+}
+
+gdGetFolderInfo = async function(id, callback) {
+  if(/^https:\/\//i.test(id)) { id = getGoogleDriveFolderId(id); }
+  var url = 'https://drive.google.com/drive/folders/' + id + '?usp=drive_link';
+  var res, data;
+  var html = '';
+  if(typeof(html)=='string' && html=='') {
+    html = await corsProxy(url);
+    if(typeof(html)=='string' && html=='') { html = await appsScriptProxy(url); }
+  }
+  if(typeof(html)=='string' && html.replace(/\s/g,'')!='') {
+    try { data = html.match(/<script[^>]+>\s*AF_initDataCallback\((?:.|\n)*?<\/script>/img).pop(); } catch(e) { data = null; };
+    if(typeof(data)=='string' && data.replace(/\s/g,'')!='') {
+      try { data = data.match(/<script[^>]+>\s*AF_initDataCallback\(((?:.|\n)*?)\);<\/script>/im)[1]; } catch(e) { data = null;};
+      if(typeof(data)=='string' && data.replace(/\s/g,'')!='') {
+        data = data.replace(/'/g, '"');
+        data = data.replace("key:", '"key":').replace('data:', '"data":').replace('hash:', '"hash":').replace('sideChannel:', '"sideChannel":');
+        data = JSON.parse(data);
+      }
+      if(typeof(data)!='undefined' && typeof(data['data'])!='undefined' && typeof(data['data'][4])!='undefined') {
+        data = data['data'][4];
+        for(var i=0; i<data.length; i++) { data[i].splice(4); }
+      }
+    }
+  }
+  if(typeof(callback)=='function') { callback(data); }
+  return data;
+};
+
+appsScriptProxy = async function(url, callback) {
+  var proxy = 'https://script.google.com/macros/s/AKfycbz0E5--tUkPStLMDWKHQDqkge0wlYYSN2LczZF44CEGLT1_ytYrHtnf7xLon3cM_lHd/exec';
+  var res = await fetch(proxy + '?url=' + encodeURIComponent(url));
+  if(res && res.status == 200) { var data = await res.json(); return data['result']; }
+  else { return ''; }
+};
+
+corsProxy = async function(url, callback) {
+  var data = '';
+  if(!(/nocache=/.test(url))) { var nocache = 'nocache=' + new Date().getTime(); url += (/\?/.test(url)?'&':'?') + nocache; }
+  try {
+    var res = await fetch('https://corsproxy.io/?'+encodeURIComponent(url));
+    if(res && res.status == 200) { data = await res.text(); }
+  } catch(e) { data = ''; }
+  return data;
+};
+
+alloriginsProxy = async function(url, callback) {
+  var data = '';
+  if(!(/nocache=/.test(url))) { var nocache = 'nocache=' + new Date().getTime(); url += (/\?/.test(url)?'&':'?') + nocache; }
+  try {
+    res = await fetch('https://api.allorigins.win/get?url='+encodeURIComponent(url));
+    data = await res.json();
+    if(data != null && typeof(data['contents']) != 'undefined') { data = data['contents']; } else { data = ''; }
+  } catch(e) { data = ''; }
+  return data;
+};
+
+gdFetchTextFile = async function(url, callback) {
+  if(typeof(url)!='string' || url.replace(/\s/g) == '') return '';
+  if(!/^https:\/\//.test(url)) { url = 'https://drive.google.com/file/d/' + url + '/view?usp=drive_link'; }
+  var data = '', res, html;
+  var nocache = 'nocache=' + new Date().getTime();
+  url += (/\?/.test(url)?'&':'?') + nocache;
+  html = '';
+  try { res = await fetch(url); if(res && res.status == 200) { html = await res.text(); } } catch(e) {}
+  if(typeof(html)!='string' || html.replace(/\s/g, '') == '') {
+    html = await corsProxy(url);
+    if(typeof(html)!='string' || html.replace(/\s/g, '') == '') { html = await appsScriptProxy(url); }
+  }
+  if(typeof(html)=='string' && html.replace(/\s/g, '')!='') {
+    var itemJson = gdFileShareParse(html, true);
+    if(itemJson) {
+      if(itemJson.url_9) { url = itemJson.url_9; }
+      else if(itemJson.url_18) { url = itemJson.url_18; }
+    }
+    if(itemJson && /text/i.test(itemJson.mimeType) ) {
+      try { res = await fetch(url); if(res && res.status == 200) { data = await res.text(); } }
+      catch(e) { data = await corsProxy(url); if(data == '') { data = await appsScriptProxy(url); } }
+      if( /^\)\]\}'/.test(data) ) {
+        var viewerngUrl = 'https://drive.google.com/viewerng/';
+        var page, meta, pages = 1;
+        data = JSON.parse(data.replace(/^[^{]+/, ''));
+        meta = data['meta']; page = data['page'];
+        url = viewerngUrl + meta;
+        try { res = await fetch(url); if(res && res.status == 200) { data = await res.text(); } }
+        catch(e) { data = await corsProxy(url); if(data == '') { data = await appsScriptProxy(url); } }
+        if(typeof(data)=='string' && /pages/.test(data)) {
+          data = JSON.parse(data.replace(/^[^{]+/, ''));
+          if(typeof(data['pages']) == 'number') { pages = data['pages']; }
+        }
+        html = '';
+        for(var i=0; i<pages; i++) {
+          url = viewerngUrl + page;
+          if(i > 0) { url = url.replace(/\&page=\d+/, ''); url += '&auditContext=forDisplay&page=' + i; }
+          try {
+            res = await fetch(url);
+            if(res && res.status == 200) {
+              if( /^text/.test(page) ) { data = await res.text(); data = JSON.parse(data.replace(/^[^{]+/, ''))['data']; }
+              else { data = await res.blob(); }
+            }
+          } catch(e) { data = await corsProxy(url); if(data == '') { data = await appsScriptProxy(url); } data = JSON.parse(data.replace(/^[^{]+/, ''))['data']; }
+          if(typeof(data)=='string') { html += data; }
+        }
+        data = html;
+      }
+    }
+  }
+  if(typeof(callback)=='function') { callback(data); }
+  return data;
+};
+
+getGoogleDriveFileDownloadURL = function(url) {
+  var id = getGoogleDriveFileId(url);
+  if(id!='') {
+    var resourcekey = gl_getUrlParam('resourcekey', url);
+    url = 'https://drive.usercontent.google.com/download?export=download&confirm=t&authuser=0&id='+id;
+    url += '&confirm=t&';
+    url += (resourcekey!=''?'&resourcekey='+resourcekey:'');
+  } else { url = ''; }
+  return url;
+};
+
+fetchFileFromGoogleDrive = async function(url, callback) {
+  var fileDownloadURL = getGoogleDriveFileDownloadURL(url);
+  if(fileDownloadURL!='') {
+    var nocache = 'nocache=' + new Date().getTime();
+    fileDownloadURL += (/\?/.test(fileDownloadURL)?'&':'?') + nocache;
+    fileDownloadURL = 'https://corsproxy.io/?url='+fileDownloadURL;
+    fetch(fileDownloadURL)
+      .then(async res => {
+        if(res) {
+          if(res.ok) { return res.text(); }
+          else {
+            var txt;
+            try {
+              fileDownloadURL = getGoogleDriveFileDownloadURL(url);
+              fileDownloadURL += (/\?/.test(fileDownloadURL)?'&':'?') + nocache;
+              txt = await appsScriptProxy(fileDownloadURL);
+            } catch(err) { console.log('error: ', err); }
+            if(typeof txt == 'string' && txt != '') { return txt; }
+            else {
+              if(typeof(callback)=='function') { callback('', 'HTML5 FUN 的檔案下載失敗, 無法繼續。\n\n雲端硬碟回應的錯誤代碼: '+res.status); }
+              else { return ''; }
+            }
+          }
+        }
+      })
+      .then(rep => {
+        if(rep && typeof(callback)=='function') { callback(rep); }
+        else { console.log(rep); }
+      });
+  } else {
+    if(typeof(callback)=='function') { callback("", '網址有問題, 無法繼續'); }
+    else { gl_showMessage('網址有問題, 無法繼續'); }
+  }
+};
+
+appendSettingJS = function(html) {
+  var parentNode;
+  var oldJS = document.getElementById('settingJS');
+  if(typeof(oldJS)!='undefined' && oldJS!=null) { parentNode = oldJS.parentNode; oldJS.parentNode.removeChild(oldJS); }
+  else {
+    parentNode = document.querySelector('.playBtnWrapper');
+    if(typeof(parentNode)!='undefined' && parentNode!=null) { parentNode.innerHTML = ''; }
+    else { parentNode = document.getElementsByTagName('body')[0]; }
+  }
+  var scriptTag = document.createElement('script');
+  scriptTag.type = "text/javascript";
+  scriptTag.charset = "utf-8";
+  scriptTag.id = 'settingJS';
+  scriptTag.innerHTML = html;
+  parentNode.appendChild(scriptTag);
+};
+
+replaceHtmlAndStartGame = function(html, errorMsg) {
+  rocketLaunch(false);
+  var match;
+  window['html'] = html;
+  if(/<html/i.test(html) && /id\s*=\s*[\'\"]settingJS[\'\"]/.test(html) && (match=html.match(/<head>((?:.|\n|\r)*?)<\/head>/im))) {
+    var head = match[1];
+    if(match = html.match(/<body>((?:.|\n|\r)*?)<\/body>/im)) {
+      var body = match[1];
+      var parentNode = document.querySelector('.playBtnWrapper');
+      if(typeof(parentNode)!='undefined' && parentNode!=null) { parentNode.innerHTML = body; }
+      else { document.body.innerHTML = body; }
+    }
+  } else if(match = html.match(/\/\**\s+\*\s+modulename\:\s*((?:.|\n|\r)*?)\n\s+\*\s+template\:\s*((?:.|\n|\r)*?)\n/im)) {
+    var modulenameInJs = match[1];
+    var templateInJs = match[2];
+  } else if(match = html.match(/\/\/\s*HTML5\s*FUN\s*題庫設定檔\s*([^\s]+)\s/im)) {
+    var modulenameInJs = match[1].toLowerCase();
+    var templateInJs = 'unknow';
+  }
+  if(typeof(head)=='string' && head.replace(/\s/g, '')!='' && typeof(body)=='string' && body.replace(/\s/g, '')!='') { reloadInjectionJS(); }
+  else if(typeof(modulenameInJs)=='string' && typeof(templateInJs)=='string') { appendSettingJS(html); reloadInjectionJS(modulenameInJs); }
+  else {
+    if(/<html/i.test(html) && (match=html.match(/<head>((?:.|\n|\r)*?)<\/head>/im))) {
+      if(typeof(autostart)=='boolean' && autostart) { document.open(); document.write(html); document.close(); }
+      return;
+    }
+    try { document.querySelector('.resultBlock').style.display = 'none'; } catch(e) {};
+    setTimeout(function() { gl_showMessage(typeof(errorMsg)=='string' ? errorMsg : '找不到 HTML5 FUN 的設定, 無法繼續'); }, 100);
+  }
+};
+
+createGameMenu = function(menuItems) {
+  if(menuItems.length > 0) {
+    menuItems.push(['', '']);
+    var menuContainer = document.createElement('div');
+    menuContainer.id = 'file-menu-container';
+    menuContainer.setAttribute('class', 'file-menu-container');
+    menuContainer.innerHTML = '<div class="file-menu-close"role="button" title="離開選單" aria-label="Close">&#215;</div>';
+    var menu = document.createElement('div');
+    menu.id = 'file-menu';
+    menu.setAttribute('class', 'file-menu');
+    menuItems.forEach(item => {
+      const m = document.createElement('div');
+      m.className = 'file-menu-item';
+      if(item[0] != '') {
+        m.setAttribute('onclick', "window.location='" + item[0] + "';");
+        m.textContent = '🚀 ' + item[1];
+      } else { m.innerHTML = '&nbsp;'; }
+      menu.appendChild(m);
+    });
+    document.querySelector('.resultBlock').parentElement.append(menuContainer);
+    menuContainer.appendChild(menu);
+    if(window.innerWidth > window.innerHeight) { menu.style.width = '80vmin'; }
+    else { menu.style.width = '85vmin'; }
+    document.querySelector('.file-menu-close').onclick = function() {
+      menuContainer.remove();
+      if(typeof(formInnerHtmlBackup)=='string') {
+        var formElm = document.getElementById('step1');
+        if(formElm) { formElm.innerHTML = formInnerHtmlBackup; }
+      }
+    };
+  }
+};
+
+showMenuByFolderInfo = function(info, isTest) {
+  rocketLaunch(false);
+  var menuItems = [];
+  if(info) {
+    for(var i=0; i<info.length; i++) {
+      var id = info[i][0];
+      var name = info[i][2].trim();
+      var mimeType = info[i][3].trim();
+      if(/^text/i.test(mimeType)) {
+        var url = getGameURL(id);
+        name = name.replace(/\.\w+$/, '');
+        menuItems.push([url, name]);
+      }
+    }
+    if(isTest==null && menuItems.length > 0) { createGameMenu(menuItems); }
+  }
+  if(menuItems.length == 0) {
+    try { document.querySelector('.resultBlock').style.display = 'none'; } catch(e) {};
+    setTimeout(function() { gl_showMessage(typeof(errorMsg)=='string' ? errorMsg : '資料夾中找不到 HTML5 FUN 的設定\n\n* 請確認資料夾的網址是否正確\n\n* 共用的對象是否為 [知道連結的任何人] '); }, 100);
+  }
+};
+
+rocketLaunch = function(enable) {
+  try { document.querySelector('#rocket').classList.toggle('rocket-launch', enable); } catch(e) {};
+  if(typeof(launchInterval)!='undefined' && launchInterval!=null) { clearInterval(launchInterval); launchInterval = null; }
+  try { document.querySelector('.rocket-flame').style.display = (enable?'block':'none'); } catch(e) {};
+  if(enable) {
+    var offset = 5;
+    launchInterval = setInterval(function() {
+      window.scrollBy({top: offset, behavior: "smooth"});
+      offset *= -1;
+      try { document.querySelector('.rocket-flame').style.transform = 'scaleX(' + (offset<0?'-1':'1') + ') translate(' + (offset<0?'50%':'-50%') + ', -50%)'; } catch(e) {};
+    }, 100);
+  }
+};
+
+decodeHTML = function(html) {
+  var txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+};
+
+gl_showMessage = function(txt) { alert(decodeHTML(txt)); };
+
+set__scale_new=function(s){
+  for(var i=1; i<=20; i++) {
+    try{document.querySelector('#aswift_'+i).parentElement.parentElement.style.scale= s;}catch(e){};
+  }
+  try{document.querySelectorAll('.google-auto-placed').forEach(e=>e.style.scale = s);}catch(err){};
+};
+
+setMetaNoReferrer = function() {
+  var metaReferrer = null;
+  var meta = document.getElementsByTagName('meta');
+  for(var nIndex=0; nIndex<meta.length; nIndex++) {
+    if(meta[nIndex].name=="referrer") { metaReferrer = meta[nIndex]; break; }
+  }
+  if(metaReferrer==null) {
+    metaReferrer = document.createElement('meta');
+    metaReferrer.name = "referrer";
+    try { document.getElementsByTagName('head')[0].appendChild(metaReferrer); } catch(e) { console.log(e); }
+  }
+  try { metaReferrer.content = "no-referrer"; } catch(e) { console.log(e); }
+};
+
+setMetaNoReferrer();
+
+var fileId = '';
+var fileIdURI = gl_getUrlParam('id');
+var folderId = gl_getUrlParam('fid');
+var sheetId = gl_getUrlParam('sheet');
+if(sheetId!='') { fileId = sheetId; }
+else if(folderId!='') { fileId = folderId; }
+else if(fileIdURI!='') { fileId = fileIdURI; }
+
+var sheetName = gl_getUrlParam('sheetName');
+var gid = gl_getUrlParam('gid');
+var gameID = gl_getUrlParam('gameID');
+var gameIdAt = gl_getUrlParam('idat').toUpperCase() || 'A';
+var qs = gl_getUrlParam('qs');
+
+// ============ 預設題庫（單機版選單用） ============
+// 沒有網址參數時，自動載入這個試算表的遊戲列表分頁 → 直接出現課別選單
+var DEFAULT_SHEET_ID = '1eaVAbnTEDxyiimazfgcYk1JTw8B-sG6yx2IRI2zc_5k';
+if(fileId=='') {
+  sheetId = DEFAULT_SHEET_ID;   // 一定要設 sheetId，start() 是用它判斷走「試算表」分支
+  fileId = DEFAULT_SHEET_ID;
+  gid = '0';
+}
+// ============ 預設題庫結束 ============
+
+start = async function() {
+  var timeDelay = /^file:/.test(window.location.href)?500:6000;
+  var rocketLabel = document.querySelector('#rocket-label');
+
+  if(fileId=='') {
+    var msg = '未指定題庫, 無法載入遊戲';
+    var elm = document.getElementById('step1');
+    if(!elm) {
+      elm = document.getElementById('step2');
+      if(elm) { elm.innerHTML = '<h1>' + msg + '</h1>'; elm.style.display = 'block'; }
+    }
+  } else {
+    try{
+      var formElm = document.getElementById('step1');
+      formInnerHtmlBackup = formElm.innerHTML;
+      formElm.innerHTML = '<h3>^_^</h3>';
+    } catch(e){};
+    autostart = true;
+    rocketLaunch(true);
+    if(rocketLabel) rocketLabel.innerHTML = '載入中';
+    setTimeout(function(){if(rocketLabel) rocketLabel.innerHTML = '請稍候';}, timeDelay/2);
+    window.scroll(0, 0);
+    setTimeout(function() {
+      if(typeof(set__scale_new)=='function') set__scale_new(0.001);
+      if(rocketLabel) rocketLabel.innerHTML = ['快好了', '來囉', '啟動遊戲'][Math.floor(Math.random()*3)];
+      if(sheetId!='') {
+        if(gameID!='') {
+          var url = getSheetQueryURL(fileId, gid, sheetName, '', gameID, gameIdAt);
+          getSpreadSheetQueryResponse(url, loadJavascriptAndStartGame);
+        } else if(qs == '1') {
+          var url = getSheetQueryURL(fileId, gid, sheetName, '', 'https://null', gameIdAt);
+          url = url.replace(/&tq=[^&]+/, '');
+          getSpreadSheetQueryResponse(url, questionSheetToSettingJS);
+        } else {
+          updateGameIdListFromSheet({sheet:sheetId, gid:gid, gameIdAt:gameIdAt});
+        }
+      } else if(folderId!='') {
+        gdGetFolderInfo(folderId, showMenuByFolderInfo);
+      } else {
+        fetchFileFromGoogleDrive(fileId, replaceHtmlAndStartGame);
+      }
+      setTimeout(function() {
+        var btn = document.getElementById('closeBtn');
+        if(typeof(btn)!='undefined' && btn!=null) { btn.style.display = 'none'; }
+        if(typeof(set__scale_new)=='function') {
+          set__scale_new(0.001);
+          setTimeout(function(){set__scale_new(0.001);}, 3000);
+          setTimeout(function(){set__scale_new(0.001);}, 20000);
+        }
+      }, 3000);
+    }, timeDelay);
+  }
+};
+
+// ============ 注音高手：關閉自動播放聲音補丁 ============
+(function() {
+  var _origPlay = HTMLMediaElement.prototype.play;
+  var _lastInteraction = 0;
+
+  document.addEventListener('mousedown', function() { _lastInteraction = Date.now(); }, true);
+  document.addEventListener('touchstart', function() { _lastInteraction = Date.now(); }, true);
+
+  HTMLMediaElement.prototype.play = function() {
+    if (this.tagName === 'AUDIO' && Date.now() - _lastInteraction > 50) {
+      return Promise.resolve();
+    }
+    return _origPlay.apply(this, arguments);
+  };
+
+  window._stopSoundPatch = function() {
+    HTMLMediaElement.prototype.play = _origPlay;
+  };
+})();
+// ============ 補丁結束 ============
+
+// ============ 主選單按鈕 ============
+(function() {
+  // 建立按鈕
+  var btn = document.createElement('div');
+  btn.id = 'backToMenuBtn';
+  btn.textContent = '主選單';
+  btn.style.cssText = 'display:none;position:fixed;bottom:20px;right:50px;z-index:999999999;background:#ff6b8a;color:#fff;border:none;border-radius:50%;width:60px;height:60px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 4px 14px rgba(255,107,138,.4);line-height:60px;text-align:center;';
+  btn.addEventListener('click', function() {
+    // 去掉 gid/qs/gameid 參數 → 回到遊戲選單（啟動器讀取第一個分頁的遊戲列表，彈出課別選單）
+    var u = window.location.href
+      .replace(/([?&])(gid|qs|gameid)=[^&]*/g, '$1')
+      .replace(/\?&/, '?')
+      .replace(/&&+/g, '&')
+      .replace(/[?&]$/, '');
+    if (u === window.location.href) {
+      // 沒有這些參數（從表單啟動的情境）→ 回到乾淨的啟動器主畫面
+      u = window.location.href.split('?')[0].split('#')[0];
+    }
+    window.location.href = u;
+  });
+  document.body.appendChild(btn);
+
+  // 遊戲執行中才顯示按鈕（離開遊戲自動隱藏）
+  setInterval(function() {
+    var game = document.getElementById('HTML5FunEmbeded') || document.querySelector('.lime-director');
+    btn.style.display = game ? 'block' : 'none';
+  }, 300);
+})();
+// ============ 主選單按鈕結束 ============
+
+start();
+</script>
+</body>
+</html>
