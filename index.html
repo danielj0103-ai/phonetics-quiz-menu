@@ -1571,8 +1571,13 @@ start = async function() {
   btn.id = 'backToMenuBtn';
   btn.textContent = '主選單';
   btn.style.cssText = 'display:none;position:fixed;bottom:110px;right:50px;z-index:999999999;background:#ff6b8a;color:#fff;border:none;border-radius:50%;width:60px;height:60px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 4px 14px rgba(255,107,138,.4);line-height:60px;text-align:center;';
-  btn.addEventListener('click', function() {
-    // 去掉 gid/qs/gameid 參數 → 回到遊戲選單（啟動器讀取第一個分頁的遊戲列表，彈出課別選單）
+  var _menuNavigating = false;
+  var goMenu = function(e) {
+    if (_menuNavigating) return;
+    _menuNavigating = true;
+    if (e && e.cancelable) { e.preventDefault(); }
+    if (e) { e.stopPropagation(); }
+    // 去掉 gid/qs/gameid 參數 → 回到遊戲選單（啟動器讀取第一個分頁的遊第一個分頁的遊戲列表，彈出課別選單）
     var u = window.location.href
       .replace(/([?&])(gid|qs|gameid)=[^&]*/g, '$1')
       .replace(/\?&/, '?')
@@ -1583,7 +1588,11 @@ start = async function() {
       u = window.location.href.split('?')[0].split('#')[0];
     }
     window.location.href = u;
-  });
+  };
+  // 觸控裝置上，遊戲執行中 lime.js 會在 touch 事件 preventDefault，
+  // 導致瀏覽器不合成 click 事件；因此同時綁定 click（滑鼠）與 touchend（觸控）。
+  btn.addEventListener('click', goMenu);
+  btn.addEventListener('touchend', goMenu);
   document.body.appendChild(btn);
 
   // 遊戲執行中才顯示按鈕（離開遊戲自動隱藏）
