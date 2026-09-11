@@ -215,7 +215,7 @@ a:hover { text-decoration: underline; }
 <div id="rocket" style="clear: both;">
   <label id="rocket-label" style="display:none;">載入中</label>
   <a href="https://gsyan888.github.io/html5_fun/editor/assets/icon-launcher.png" style="display: block; padding: 1em 0px; text-align: center;">
-    <img alt="HTML5 FUN::Game Launcher" border="0" src="https://gsyan888.github.io/html5_fun/editor/assets/icon-launcher.png" style="border: 0px;" width="200" />
+    <img alt="kitty 載入中" border="0" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/72x72/1f431.png" style="border: 0px;" width="200" />
   </a>
 </div>
 <div class="rocket-flame"><img src="https://gsyan888.github.io/html5_fun/editor/assets/icon-launcher-flame.png" /></div>
@@ -1366,13 +1366,12 @@ showMenuByFolderInfo = function(info, isTest) {
 rocketLaunch = function(enable) {
   try { document.querySelector('#rocket').classList.toggle('rocket-launch', enable); } catch(e) {};
   if(typeof(launchInterval)!='undefined' && launchInterval!=null) { clearInterval(launchInterval); launchInterval = null; }
-  try { document.querySelector('.rocket-flame').style.display = (enable?'block':'none'); } catch(e) {};
+  /* 火焰已停用（kitty 不噴火）：原 .rocket-flame 顯示切換與 transform 行已移除 */
   if(enable) {
     var offset = 5;
     launchInterval = setInterval(function() {
       window.scrollBy({top: offset, behavior: "smooth"});
       offset *= -1;
-      try { document.querySelector('.rocket-flame').style.transform = 'scaleX(' + (offset<0?'-1':'1') + ') translate(' + (offset<0?'50%':'-50%') + ', -50%)'; } catch(e) {};
     }, 100);
   }
 };
