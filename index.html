@@ -1553,6 +1553,8 @@ start = async function() {
     panel.textContent = lines.slice(0, 14).join('\n');
   };
   window._dbg('除錯面板啟動');
+  try{window._dbg('頁面：'+window.location.href.split('?')[0].slice(-50));}catch(e){}
+  var _diagT=setInterval(function(){try{if(typeof window.HTML5FunScript==='string'&&window.HTML5FunScript!==''){window._dbg('遊戲URL：'+window.HTML5FunScript.slice(-70));clearInterval(_diagT);}}catch(e){}},500);
   ['touchstart', 'touchend', 'mousedown', 'mouseup', 'click'].forEach(function(ev) {
     document.addEventListener(ev, function(e) {
       var el = e.target;
