@@ -1602,6 +1602,22 @@ start = async function() {
 })();
 // ============ 主選單按鈕結束 ============
 
+// ============ 注音高手：改載修改版遊戲 ============
+(function() {
+  var PATCHED_URL = "https://danielj0103-ai.github.io/phonetics-quiz-menu/game/phonetics_quiz.js";
+  setInterval(function() {
+    try {
+      if (typeof window.HTML5FunScript === 'string' && window.HTML5FunScript.indexOf('gsyan888.github.io/html5_fun/html5_phonetics_quiz/phonetics_quiz.js') >= 0) {
+        window.HTML5FunScript = PATCHED_URL;
+      }
+      if (window.moduleScripts && window.moduleScripts.phonetics_quiz) {
+        window.moduleScripts.phonetics_quiz.src = PATCHED_URL;
+      }
+    } catch (e) {}
+  }, 300);
+})();
+// ============ 改載修改版遊戲結束 ============
+
 start();
 </script>
 </body>
