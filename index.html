@@ -1576,7 +1576,8 @@ start = async function() {
         var r = d.getBoundingClientRect();
         var img = d.querySelector('img');
         var ir = img ? img.getBoundingClientRect() : null;
-        window._dbg('回饋框：字級=' + cs.fontSize + ' 框=' + r.width.toFixed(0) + 'x' + r.height.toFixed(0) + ' 圖=' + (ir ? ir.width.toFixed(0) + 'x' + ir.height.toFixed(0) : '無圖'));
+        var _bg='';try{_bg=cs.backgroundImage||'';}catch(e){}
+        window._dbg('回饋框：字級=' + cs.fontSize + ' 框=' + r.width.toFixed(0) + 'x' + r.height.toFixed(0) + ' 圖=' + (ir ? ir.width.toFixed(0) + 'x' + ir.height.toFixed(0) : '無圖') + ' 背景圖=' + ((_bg&&_bg.indexOf('1f44d')>=0)?'有':'無'));
       }
       if (!d) _lastLmDiv = null;
     } catch (e) {}
