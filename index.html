@@ -610,7 +610,7 @@ reloadInjectionJS = function(modulename, attributes, debug) {
   scriptTag.type = "text/javascript";
   scriptTag.charset = "utf-8";
   scriptTag.id = 'injectionJS';
-  scriptTag.src = (debug ? "./" : "https://gsyan888.github.io/html5_fun/")+"html5_fun_embeded.js" + nocache;
+  scriptTag.src = (debug ? "./" : (window.HTML5FunLocalBase || "https://gsyan888.github.io/html5_fun/"))+"html5_fun_embeded.js" + nocache;
   scriptTag.setAttribute('autostart', "false");
   if(typeof(attributes)=='object' && attributes!=null) {
     var keys = Object.keys(attributes);
@@ -1020,7 +1020,7 @@ questionSheetToSettingJS = async function(data) {
       html = '<script charset="utf-8" id="settingJS" type="text\/javascript">\n';
       html += js;
       html += '\n<\/script>';
-      html += '\n<script type="text\/javascript" charset="utf-8" id="injectionJS" src="https://gsyan888.github.io/html5_fun/html5_fun_embeded.js" autostart="false" modulename="' + GAME_ID + '"><\/script>';
+      html += '\n<script type="text\/javascript" charset="utf-8" id="injectionJS" src="' + (window.HTML5FunLocalBase || "https://gsyan888.github.io/html5_fun/") + 'html5_fun_embeded.js" autostart="false" modulename="' + GAME_ID + '"><\/script>';
       document.querySelector('.playBtnWrapper').innerHTML = html;
       reloadInjectionJS();
     }
@@ -1431,6 +1431,10 @@ if(fileId=='') {
 }
 // ============ 預設題庫結束 ============
 
+// ============ 本地遊戲引擎 ============
+window.HTML5FunLocalBase = "https://danielj0103-ai.github.io/phonetics-quiz-menu/game/";
+// ============ 本地遊戲引擎結束 ============
+
 start = async function() {
   var timeDelay = /^file:/.test(window.location.href)?500:6000;
   var rocketLabel = document.querySelector('#rocket-label');
@@ -1601,22 +1605,6 @@ start = async function() {
   }, 300);
 })();
 // ============ 主選單按鈕結束 ============
-
-// ============ 注音高手：改載修改版遊戲 ============
-(function() {
-  var PATCHED_URL = "https://danielj0103-ai.github.io/phonetics-quiz-menu/game/phonetics_quiz.js";
-  setInterval(function() {
-    try {
-      if (typeof window.HTML5FunScript === 'string' && window.HTML5FunScript.indexOf('gsyan888.github.io/html5_fun/html5_phonetics_quiz/phonetics_quiz.js') >= 0) {
-        window.HTML5FunScript = PATCHED_URL;
-      }
-      if (window.moduleScripts && window.moduleScripts.phonetics_quiz) {
-        window.moduleScripts.phonetics_quiz.src = PATCHED_URL;
-      }
-    } catch (e) {}
-  }, 300);
-})();
-// ============ 改載修改版遊戲結束 ============
 
 start();
 </script>
