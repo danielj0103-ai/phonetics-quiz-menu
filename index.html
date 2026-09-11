@@ -1564,6 +1564,23 @@ start = async function() {
       window._dbg('事件 ' + ev + ' @ ' + info);
     }, true);
   });
+  var _lastLmDiv = null;
+  setInterval(function(){
+    try {
+      if (window._gamePatchVer && window._lastLoggedVer !== window._gamePatchVer) { window._lastLoggedVer = window._gamePatchVer; window._dbg('遊戲版本：' + window._gamePatchVer); }
+      var d = null;
+      try { if (window.labelMessage) d = Sc(window.labelMessage).d; } catch (e) {}
+      if (d && d !== _lastLmDiv) {
+        _lastLmDiv = d;
+        var cs = getComputedStyle(d);
+        var r = d.getBoundingClientRect();
+        var img = d.querySelector('img');
+        var ir = img ? img.getBoundingClientRect() : null;
+        window._dbg('回饋框：字級=' + cs.fontSize + ' 框=' + r.width.toFixed(0) + 'x' + r.height.toFixed(0) + ' 圖=' + (ir ? ir.width.toFixed(0) + 'x' + ir.height.toFixed(0) : '無圖'));
+      }
+      if (!d) _lastLmDiv = null;
+    } catch (e) {}
+  }, 500);
 })();
 // ============ 除錯面板結束 ============
 
