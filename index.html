@@ -1546,6 +1546,7 @@ start = async function() {
   var panel = document.createElement('div');
   panel.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:2147483647;background:rgba(0,0,0,.78);color:#7CFC00;font:12px/1.5 Consolas,monospace;padding:8px 10px;border-radius:8px;max-width:78vw;max-height:45vh;overflow:hidden;pointer-events:none;white-space:pre-wrap;';
   document.body.appendChild(panel);
+  var _dbgVer=document.createElement('div');_dbgVer.id='dbgVer';_dbgVer.style.cssText='position:fixed;right:8px;bottom:8px;z-index:2147483647;background:rgba(0,0,0,.6);color:#fff;font:10px monospace;padding:2px 6px;border-radius:4px;pointer-events:none;';_dbgVer.textContent='game:?';document.body.appendChild(_dbgVer);
   window._dbg = function(msg) {
     var d = new Date();
     var t = d.toLocaleTimeString('en-GB', { hour12: false }) + '.' + String(d.getMilliseconds()).padStart(3, '0');
@@ -1570,6 +1571,7 @@ start = async function() {
   setInterval(function(){
     try {
       if (window._gamePatchVer && window._lastLoggedVer !== window._gamePatchVer) { window._lastLoggedVer = window._gamePatchVer; window._dbg('遊戲版本：' + window._gamePatchVer); }
+      try{var _bv=document.getElementById('dbgVer');if(_bv&&window._gamePatchVer)_bv.textContent='game:'+window._gamePatchVer;}catch(e){}
       var d = null;
       try { if (window.labelMessage) d = Sc(window.labelMessage).d; } catch (e) {}
       if (d && d !== _lastLmDiv) {

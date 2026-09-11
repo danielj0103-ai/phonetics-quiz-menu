@@ -59,7 +59,7 @@ var moduleScripts = {
     name:"Speaking"
   },
   phonetics_quiz:{
-    src:"https://danielj0103-ai.github.io/phonetics-quiz-menu/game/phonetics_quiz.js",
+    src:"https://danielj0103-ai.github.io/phonetics-quiz-menu/game/phonetics_quiz_v2.js",
     name:"注音高手"
   },
   pk:{
