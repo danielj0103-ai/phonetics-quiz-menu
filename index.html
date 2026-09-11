@@ -1573,7 +1573,7 @@ start = async function() {
       if (window._gamePatchVer && window._lastLoggedVer !== window._gamePatchVer) { window._lastLoggedVer = window._gamePatchVer; window._dbg('遊戲版本：' + window._gamePatchVer); }
       try{var _bv=document.getElementById('dbgVer');if(_bv&&window._gamePatchVer)_bv.textContent='game:'+window._gamePatchVer;}catch(e){}
       var d = null;
-      try { if (window.labelMessage) d = Sc(window.labelMessage).d; } catch (e) {}
+      try { var _all = document.querySelectorAll('.lime-director div'); for (var _qi = 0; _qi < _all.length; _qi++) { var _qc = null; try { _qc = getComputedStyle(_all[_qi]); } catch (e2) { continue; } if (_qc && _qc.backgroundColor && _qc.backgroundColor.indexOf('176, 65, 255') >= 0) { d = _all[_qi]; break; } } } catch (e) {}
       if (d && d !== _lastLmDiv) {
         _lastLmDiv = d;
         var cs = getComputedStyle(d);
