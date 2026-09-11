@@ -410,6 +410,7 @@ updateGameIdList = function(data, gameIdAt, url, target) {
         } else {
           gameURL = getGameURL(url.sheet, '', values[i], url.gameIdAt, url.gid);
         }
+        gameURL += (gameURL.indexOf('?')>=0?'&':'?') + 'v=20260911b';
         menuItems.push([gameURL, values[i]]);
       }
       rocketLaunch(false);
@@ -1502,18 +1503,15 @@ start = async function() {
     if (this.tagName === 'AUDIO') {
       var delta = Date.now() - _lastInteraction;
       var srcName = (this.src || '').split('/').pop().slice(0, 28);
-      if (window._dbg) window._dbg('play() AUDIO「' + srcName + '」距上次互動 ' + delta + 'ms → ' + (delta > 50 ? '攔截' : '放行'));
       if (delta > 50) return Promise.resolve();
       try {
         var p = _origPlay.apply(this, arguments);
         if (window._dbg && p && p.catch) {
           p.catch(function(err) {
-            if (window._dbg) window._dbg('★ play() 被瀏覽器拒絕：' + (err && err.name ? err.name : err));
           });
         }
         return p;
       } catch (e) {
-        if (window._dbg) window._dbg('★ play() 丟出例外：' + e);
         throw e;
       }
     }
@@ -1521,7 +1519,6 @@ start = async function() {
   };
 
   HTMLMediaElement.prototype.pause = function() {
-    if (this.tagName === 'AUDIO' && window._dbg) window._dbg('pause() AUDIO');
     return _origPause.apply(this, arguments);
   };
 
